@@ -59,13 +59,10 @@ void initPlayers(Player* player) {
 		printf("\n Enter player %d name: ", i + 1);
 		scanf("%s", player[i].name);
 
-		// DEBUG --
-		//printf("\n Player %d name: %s", i + 1, player[i].name); 
-		// END DEBUG
-
 		printf("\n Enter player %d piece: ", i + 1);
 		scanf(" %c", &piece);
 
+		// TODO: Handle a case where the user does not enter X or O
 		if(toupper(piece) == 'X') player[i].piece = X;
 		else player[i].piece = O;
 	}
@@ -151,9 +148,7 @@ Pair translate(const int cell) {
 	return pair;
 }
 
-void placeOnBoard(Board* board, const int cell, const PlayerToken piece) {
-	// translate cell into board array index
-	Pair board_index = translate(cell);
+void placeOnBoard(Board* board, const Pair board_index, const PlayerToken piece) {
 	board->board[board_index.first][board_index.second] = piece;
 	board->cell_used[board_index.first][board_index.second] = true;
 }
@@ -172,56 +167,42 @@ void getPlayerInput(Board* board, const Player* player) {
 		if(illegal_move) printf("\n Illegal Move: Try Again!\n");
 	} while(illegal_move);
 
-	// in() should be a library call
-	//while(!legalMove(board_cell, board)); // error, stay in loop until proper input is given
-	
-	switch(player->piece) {
-		case X: {
-			placeOnBoard(board, board_cell, player->piece); // player->piece : PlayerToken.X
-		} break;
-		case O: {
-			placeOnBoard(board, board_cell, player->piece);
-		} break;
-		default: {
-			// should be an error
-			// placeOnBoard(&board, &player, PlayerToken.INVALID);
-		}
-	}
+	placeOnBoard(board, board_index, player->piece);
 }
 
-bool isPlayerWinning(const Board* board, Player* player, const Outcome outcome) {
-	// check for X
+// bool isPlayerWinning(const Board* board, Player* player, const Outcome outcome) {
+// 	// check for X
 
-	bool winning;
+// 	bool winning;
 
-	switch(player->piece) {
-		case X: {
-			int sum = 0;
+// 	switch(player->piece) {
+// 		case X: {
+// 			int sum = 0;
 
-			for(int row = 0; row < BRD_SIZE; ++row) {
-				for(int col = 0; col < BRD_SIZE; ++col) {
-					sum += board->board[row][col]; 
-				}
-				if(sum == (88 * 3)) {
-					// X is winning
-				}
-			}
+// 			for(int row = 0; row < BRD_SIZE; ++row) {
+// 				for(int col = 0; col < BRD_SIZE; ++col) {
+// 					sum += board->board[row][col]; 
+// 				}
+// 				if(sum == (88 * 3)) {
+// 					// X is winning
+// 				}
+// 			}
 			
-		} break;
-		case O: {
+// 		} break;
+// 		case O: {
 			
-		} break;
-		default: {
-		}
-	}
+// 		} break;
+// 		default: {
+// 		}
+// 	}
 
-	for(int row = 0; row < BRD_SIZE; ++row) {
-		if()
-	}
+// 	for(int row = 0; row < BRD_SIZE; ++row) {
+// 		if()
+// 	}
 
 
-	// check for O
-}
+// 	// check for O
+// }
 
 void showWinner(const Board* board) {
 

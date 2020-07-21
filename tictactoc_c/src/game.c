@@ -36,7 +36,6 @@ int main() {
     Game game;
 
     clearBoard(&game.board);
-
     initBoard(&game.board);
     
     /*
@@ -72,7 +71,7 @@ int main() {
         // quit - exits current game and brings back main menu
         // exit - out of game.
         drawBoard(&game.board);
-        getPlayerInput(&game.board, &game.player[player_turn % 2]);
+        getPlayerInput(&game.board, &game.player[player_turn % PLAYER_COUNT]);
 
         // /*  - Save current state
         //     - Clear board

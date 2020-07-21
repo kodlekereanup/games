@@ -8,8 +8,8 @@
 
 // -------------------------------------- ENUM DECLARATIONS --------------------------------------------
 typedef enum { X = 88, O = 79 } PlayerToken;
-typedef enum { PLAYER_1 = -1, PLAYER_2 = 1, MO_DRAW = 0 } MultiplayerOutcome;
-typedef enum { PLAYER   = -1, COMPUTER = 1, CO_DRAW = 0 } ComputerOutcome;
+typedef enum { PLAYER1_WIN = -1, PLAYER2_WIN  = 1, MO_DRAW = 0 } MultiplayerOutcome;
+typedef enum { PLAYER_WIN  = -1, COMPUTER_WIN = 1, CO_DRAW = 0 } ComputerOutcome;
 
 /*
 LastMove struct needs a bunch of player information to undo/redo the moves made by both players
@@ -81,11 +81,11 @@ void clearBoard(Board* board);
 void getPlayerInput(Board* board, const Player* player); // should take an input -- player id
 void drawGrid();
 bool isPlayerWinning();
-void showWinner(const Board* board, const Outcome outcome);
+void showWinner(const Board* board);
 bool rematch();
 bool quit();
 void drawBoard(const Board* board);
-void placeOnBoard(Board* board, const int cell, const PlayerToken piece);
+void placeOnBoard(Board* board, const Pair board_index, const PlayerToken piece);
 Pair translate(const int cell);
 
 // -------------------------------------- GLOBALS -------------------------------------------------------
