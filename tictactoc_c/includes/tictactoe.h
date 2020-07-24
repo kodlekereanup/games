@@ -115,12 +115,6 @@ int checkGameOutcome(const Board* board, const Player* player);
 
 
 */
-void showWinner(const Board* board);
-
-/*
-
-
-*/
 bool rematch();
 
 /*
@@ -157,6 +151,17 @@ int findPiecePlayer(const Player* player, PlayerToken piece);
 
 */
 Pair translate(const int cell);
+
+
+bool left_diag_condition(const int i, const int j);
+
+// utility function for checking right diagonal
+bool right_diag_condition(const int i, const int j);
+
+bool non_diag_condition(const int i , const int j);
+
+int generic_check(const Board* board, const Player* player,
+	      bool (*condition)(int, int), bool columns, bool diags);
 
 // -------------------------------------- GLOBALS -------------------------------------------------------
 

@@ -96,5 +96,3 @@ after every move, 16 checks need to be done (abstract).
 
 X : 3 * HORIZONTAL + 3 * VERTICAL + 2 * DIAGONAL = 8
 O : 3 * HORIZONTAL + 3 * VERTICAL + 2 * DIAGONAL = 8
-
-Maybe keep a running list?

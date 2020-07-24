@@ -77,62 +77,6 @@ void initBoard(Board* board) {
         }
 }
 
-/*
-int* free_moves_list(const Board* board, int* array_size) {
-	int* list = malloc(sizeof(int) * 9);
-	for(int i = 0; i < BRD_SIZE; ++i) {
-		for(int j = 0; j < BRD_SIZE; ++j) {
-			if(!board->cell_used[i][j]) {
-				//vector_push_back(...)
-				list[*array_size++] = board->board[i][j];
-			}
-		}
-	}
-
-	return list;
-}
-
-int recursive_binary_search(const int* arr, int l, int r, const int x) { 
-    if (r >= l) { 
-        int mid = l + (r - l) / 2; 
-  
-        // If the element is present at the middle 
-        // itself 
-        if (arr[mid] == x) 
-            return mid; 
-  
-        // If element is smaller than mid, then 
-        // it can only be present in left subarray 
-        if (arr[mid] > x) 
-            return recursive_binary_search(arr, l, mid - 1, x); 
-  
-        // Else the element can only be present 
-        // in right subarray 
-        return recursive_binary_search(arr, mid + 1, r, x); 
-    } 
-  
-    // We reach here when element is not 
-    // present in array 
-    return -1; 
-} 
-
-int find(const int* array, const int free_cell_list_size, const int key) {
-	return recursive_binary_search(array, 0, free_cell_list_size, key);
-}
-
-bool legalMove(const int cell, const Board* board) {
-	// if cell occurs in the !cell_used list, move is legal
-
-	//Vector free_moves_list = extract(board->board, !board->cell_used);
-	int free_cell_list_size = 0;
-	int* free_cell_list = free_moves_list(board, &free_cell_list_size);
-
-	// generalise this call and put in library
-	// TODO: Replace -1 by library NOT_FOUND macro
-	return (find(free_cell_list, free_cell_list_size, cell) == -1) ? false : true;
-}
-*/
-
 Pair translate(const int cell) {
 
 	// is this a good design decision? REVIEW THIS
@@ -160,8 +104,12 @@ void getPlayerInput(Board* board, const Player* player) {
 
 	do {
 		int board_cell = -1; // maybe use your rangedinteger from your library?
-		printf("\n Enter a number between 0 and 8: ");
+		printf("\n Enter a number between 0 and 8, or -1 to quit: ");
 		scanf("%d", &board_cell);
+
+		// TODO: have a look at this 
+		if(board_cell == -1) quit();
+
 		board_index = translate(board_cell);
 		illegal_move = board->cell_used[board_index.first][board_index.second];
 		if(illegal_move) printf("\n Illegal Move: Try Again!\n");
@@ -174,59 +122,69 @@ int findPiecePlayer(const Player* player, PlayerToken piece) {
 	for(int i = 0; i < PLAYER_COUNT; ++i) if(player[i].piece == piece) return i;
 }
 
-// how do I write this function in the best way possible
-// TODO: Shitty function, find better ways
-int checkGameOutcome(const Board* board, const Player* player) {
-	
-	// TODO: Will need to accept outcome as a parameter when AI is included
+int generic_check(const Board* board, const Player* player,
+	      bool (*condition)(int, int), bool columns, bool diags) {
 
 	const int X_WIN = 264;
 	const int O_WIN = 237;
-	const int DRAW  = -2;
+	const int UNDETERMINED  = -2;
 
-	if(boardFull(board)) return -1;
-
-	// check for X
-
-	// checks all rows
+	int diag_sum = 0;
+	int sum = 0;
 	for(int row = 0; row < BRD_SIZE; ++row) {
-		int row_sum = 0;
-		for(int col = 0; col < BRD_SIZE; ++col) row_sum += (int)board->board[row][col]; 
-		if(row_sum == X_WIN)      return findPiecePlayer(player, X);
-		else if(row_sum == O_WIN) return findPiecePlayer(player, O);
+		if(diags) sum = diag_sum; // this is a problem for diagonals
+		else sum = 0;
+		for(int col = 0; col < BRD_SIZE; ++col) {
+			if((*condition)(row, col) && columns) sum += (int)board->board[col][row]; 
+			else if((*condition)(row, col) && !columns) sum += (int)board->board[row][col]; 
+		}
+		//printf("\n SUM: %d\n", sum);
+		diag_sum = sum;
+		if(sum == X_WIN)      return findPiecePlayer(player, X);
+		else if(sum == O_WIN) return findPiecePlayer(player, O);
 	}
 
-	// checks all columns
-	for(int row = 0; row < BRD_SIZE; ++row) {
-		int col_sum = 0;
-		for(int col = 0; col < BRD_SIZE; ++col) col_sum += (int)board->board[col][row]; 
-		if(col_sum == X_WIN) 	  return findPiecePlayer(player, X);
-		else if(col_sum == O_WIN) return findPiecePlayer(player, O);
-	}
-
-	// check diagonals
-	int left_diag_sum = 0;
-	for(int row = 0; row < BRD_SIZE; ++row) {
-		for(int col = 0; col < BRD_SIZE; ++col) 
-			if(row == col) left_diag_sum += (int)board->board[row][col]; 
-		if(left_diag_sum == X_WIN) 		return findPiecePlayer(player, X);
-		else if(left_diag_sum == O_WIN) return findPiecePlayer(player, O);
-	}
-
-	int right_diag_sum = 0;
-	for(int row = 0; row < BRD_SIZE; ++row) {
-		for(int col = 0; col < BRD_SIZE; ++col) 
-			if(row + col == BRD_SIZE - 1) right_diag_sum += (int)board->board[row][col]; 
-		if(right_diag_sum == X_WIN) return findPiecePlayer(player, X);
-		else if(right_diag_sum == O_WIN) return findPiecePlayer(player, O);
-	}
-	// should not return -1 until board is 
-	return DRAW; // draw
+	return UNDETERMINED;
 }
 
-// void showWinner(const Board* board) {
+// utility function for checking left diagonal
+bool left_diag_condition(const int i, const int j) { return i == j; }
 
-// }
+// utility function for checking right diagonal
+bool right_diag_condition(const int i, const int j) { return (i + j) == (BRD_SIZE - 1); } 
+
+bool non_diag_condition(const int i , const int j) { return true; }
+
+int checkGameOutcome(const Board* board, const Player* player) {
+	// TODO: Will need to accept outcome as a parameter when AI is included
+	const int UNDETERMINED  = -2;
+	const int DRAW 			= -1; 
+
+	if(boardFull(board)) return DRAW;
+
+	bool (*non_diag)(int, int) = non_diag_condition;
+
+	int row_check = generic_check(board, player, non_diag, false, false);
+	if(row_check != UNDETERMINED) return row_check;
+
+	int col_check = generic_check(board, player, non_diag, true, false);
+	if(col_check != UNDETERMINED) return col_check;
+
+
+	bool (*left_diag)(const int, const int) = left_diag_condition;
+	int left_diag_check = generic_check(board, player, left_diag, false, true);
+	//printf("\n LDSUM: %d\n", left_diag_check);
+	if(left_diag_check != UNDETERMINED) return left_diag_check;
+
+	bool (*right_diag)(const int, const int) = right_diag_condition;
+	int right_diag_check = generic_check(board, player, right_diag, false, true);
+	if(right_diag_check != UNDETERMINED) return right_diag_check;
+
+	// The current state of the board does not provide with enough information
+	// to decide the outcome of the game, hence UNDETERMINED
+	return UNDETERMINED; 
+
+}
 
 bool boardFull(const Board* board) {
 	for(int i = 0; i < BRD_SIZE; ++i)
@@ -237,4 +195,10 @@ bool boardFull(const Board* board) {
 }
 
 bool rematch() { return false; }
-bool quit() { return false; }
+
+bool quit() { 
+	char input;
+	printf("\n Are you sure you want to quit? Y/N \n");
+	scanf("%c", &input);
+	return (toupper(input) == 'Y')? true : false;
+}

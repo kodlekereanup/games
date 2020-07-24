@@ -53,6 +53,8 @@ int main() {
         // quit - exits current game and brings back main menu
         // exit - out of game.
 
+        // TODO: add functionality to quit here 
+
         getPlayerInput(&game.board, &game.player[player_turn % PLAYER_COUNT]);
 
         int result = checkGameOutcome(&game.board, game.player);
