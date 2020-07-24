@@ -1,6 +1,8 @@
 #ifndef TICTACTOE_H
 #define TICTACTOE_H
 
+#include <stdbool.h>
+
 // -------------------------------------- MACROS ---------------------------------------------------
 #define BRD_SIZE 3
 #define GRD_SIZE BRD_SIZE * BRD_SIZE
@@ -161,7 +163,7 @@ bool right_diag_condition(const int i, const int j);
 bool non_diag_condition(const int i , const int j);
 
 int generic_check(const Board* board, const Player* player,
-	      bool (*condition)(int, int), bool columns, bool diags);
+	      		  bool (*condition)(int, int), const bool columns, const bool diags);
 
 // -------------------------------------- GLOBALS -------------------------------------------------------
 

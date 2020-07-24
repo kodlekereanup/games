@@ -51,6 +51,7 @@ void drawBoard(const Board* board) {
 // variables at startup
 void initPlayers(Player* player) {
 	char piece;
+	bool illegal_piece;
 
 	for(int i = 0; i < PLAYER_COUNT; i++) {
 
@@ -60,11 +61,17 @@ void initPlayers(Player* player) {
 		scanf("%s", player[i].name);
 
 		printf("\n Enter player %d piece: ", i + 1);
-		scanf(" %c", &piece);
+		
+		do { 
+			scanf(" %c", &piece);
+			piece = toupper(piece);
+			illegal_piece = !(piece == 'X' || piece == 'O');
+			if(illegal_piece) printf("\n Invalid input. Please choose between X and O: \n");
+		} while(illegal_piece);
 
-		// TODO: Handle a case where the user does not enter X or O
-		if(toupper(piece) == 'X') player[i].piece = X;
+		if(piece == 'X') player[i].piece = X;
 		else player[i].piece = O;
+		
 	}
 
 }
@@ -123,13 +130,13 @@ int findPiecePlayer(const Player* player, PlayerToken piece) {
 }
 
 int generic_check(const Board* board, const Player* player,
-	      bool (*condition)(int, int), bool columns, bool diags) {
+	              bool (*condition)(int, int), const bool columns, const bool diags) {
 
-	const int X_WIN = 264;
-	const int O_WIN = 237;
+	const int X_WIN 		= 264;
+	const int O_WIN 		= 237;
 	const int UNDETERMINED  = -2;
 
-	int diag_sum = 0;
+	int diag_sum = 0; // edge case
 	int sum = 0;
 	for(int row = 0; row < BRD_SIZE; ++row) {
 		if(diags) sum = diag_sum; // this is a problem for diagonals
@@ -138,7 +145,6 @@ int generic_check(const Board* board, const Player* player,
 			if((*condition)(row, col) && columns) sum += (int)board->board[col][row]; 
 			else if((*condition)(row, col) && !columns) sum += (int)board->board[row][col]; 
 		}
-		//printf("\n SUM: %d\n", sum);
 		diag_sum = sum;
 		if(sum == X_WIN)      return findPiecePlayer(player, X);
 		else if(sum == O_WIN) return findPiecePlayer(player, O);
@@ -153,7 +159,8 @@ bool left_diag_condition(const int i, const int j) { return i == j; }
 // utility function for checking right diagonal
 bool right_diag_condition(const int i, const int j) { return (i + j) == (BRD_SIZE - 1); } 
 
-bool non_diag_condition(const int i , const int j) { return true; }
+// utility function for checking non-diagonal
+bool non_diag_condition(const int i, const int j) { return true; }
 
 int checkGameOutcome(const Board* board, const Player* player) {
 	// TODO: Will need to accept outcome as a parameter when AI is included
@@ -170,10 +177,8 @@ int checkGameOutcome(const Board* board, const Player* player) {
 	int col_check = generic_check(board, player, non_diag, true, false);
 	if(col_check != UNDETERMINED) return col_check;
 
-
 	bool (*left_diag)(const int, const int) = left_diag_condition;
 	int left_diag_check = generic_check(board, player, left_diag, false, true);
-	//printf("\n LDSUM: %d\n", left_diag_check);
 	if(left_diag_check != UNDETERMINED) return left_diag_check;
 
 	bool (*right_diag)(const int, const int) = right_diag_condition;
