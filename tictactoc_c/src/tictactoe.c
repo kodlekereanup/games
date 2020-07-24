@@ -154,12 +154,12 @@ void placeOnBoard(Board* board, const Pair board_index, const PlayerToken piece)
 }
 
 void getPlayerInput(Board* board, const Player* player) { 
-	int board_cell; // maybe use your rangedinteger from your library?
 	Pair board_index;
 	bool illegal_move;
 	// if translate(cell) is occupied, error and reinput
 
 	do {
+		int board_cell = -1; // maybe use your rangedinteger from your library?
 		printf("\n Enter a number between 0 and 8: ");
 		scanf("%d", &board_cell);
 		board_index = translate(board_cell);
@@ -170,42 +170,70 @@ void getPlayerInput(Board* board, const Player* player) {
 	placeOnBoard(board, board_index, player->piece);
 }
 
-// bool isPlayerWinning(const Board* board, Player* player, const Outcome outcome) {
-// 	// check for X
+int findPiecePlayer(const Player* player, PlayerToken piece) {
+	for(int i = 0; i < PLAYER_COUNT; ++i) if(player[i].piece == piece) return i;
+}
 
-// 	bool winning;
+// how do I write this function in the best way possible
+// TODO: Shitty function, find better ways
+int checkGameOutcome(const Board* board, const Player* player) {
+	
+	// TODO: Will need to accept outcome as a parameter when AI is included
 
-// 	switch(player->piece) {
-// 		case X: {
-// 			int sum = 0;
+	const int X_WIN = 264;
+	const int O_WIN = 237;
+	const int DRAW  = -2;
 
-// 			for(int row = 0; row < BRD_SIZE; ++row) {
-// 				for(int col = 0; col < BRD_SIZE; ++col) {
-// 					sum += board->board[row][col]; 
-// 				}
-// 				if(sum == (88 * 3)) {
-// 					// X is winning
-// 				}
-// 			}
-			
-// 		} break;
-// 		case O: {
-			
-// 		} break;
-// 		default: {
-// 		}
-// 	}
+	if(boardFull(board)) return -1;
 
-// 	for(int row = 0; row < BRD_SIZE; ++row) {
-// 		if()
-// 	}
+	// check for X
 
+	// checks all rows
+	for(int row = 0; row < BRD_SIZE; ++row) {
+		int row_sum = 0;
+		for(int col = 0; col < BRD_SIZE; ++col) row_sum += (int)board->board[row][col]; 
+		if(row_sum == X_WIN)      return findPiecePlayer(player, X);
+		else if(row_sum == O_WIN) return findPiecePlayer(player, O);
+	}
 
-// 	// check for O
+	// checks all columns
+	for(int row = 0; row < BRD_SIZE; ++row) {
+		int col_sum = 0;
+		for(int col = 0; col < BRD_SIZE; ++col) col_sum += (int)board->board[col][row]; 
+		if(col_sum == X_WIN) 	  return findPiecePlayer(player, X);
+		else if(col_sum == O_WIN) return findPiecePlayer(player, O);
+	}
+
+	// check diagonals
+	int left_diag_sum = 0;
+	for(int row = 0; row < BRD_SIZE; ++row) {
+		for(int col = 0; col < BRD_SIZE; ++col) 
+			if(row == col) left_diag_sum += (int)board->board[row][col]; 
+		if(left_diag_sum == X_WIN) 		return findPiecePlayer(player, X);
+		else if(left_diag_sum == O_WIN) return findPiecePlayer(player, O);
+	}
+
+	int right_diag_sum = 0;
+	for(int row = 0; row < BRD_SIZE; ++row) {
+		for(int col = 0; col < BRD_SIZE; ++col) 
+			if(row + col == BRD_SIZE - 1) right_diag_sum += (int)board->board[row][col]; 
+		if(right_diag_sum == X_WIN) return findPiecePlayer(player, X);
+		else if(right_diag_sum == O_WIN) return findPiecePlayer(player, O);
+	}
+	// should not return -1 until board is 
+	return DRAW; // draw
+}
+
+// void showWinner(const Board* board) {
+
 // }
 
-void showWinner(const Board* board) {
+bool boardFull(const Board* board) {
+	for(int i = 0; i < BRD_SIZE; ++i)
+		for(int j = 0; j < BRD_SIZE; ++j)
+			if(!board->cell_used[i][j]) return false;
 
+	return true;
 }
 
 bool rematch() { return false; }

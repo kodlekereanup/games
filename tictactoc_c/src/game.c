@@ -37,41 +37,49 @@ int main() {
 
     clearBoard(&game.board);
     initBoard(&game.board);
-    
-    /*
-        While game is running
-            draw board
-            make player1 move
-            check winning conditions
-                if any player wins
-                    draw win screen
-                    show options for rematch and exit
-            make player2 move
-            check winning conditions
-                if any player wins
-                    draw win screen
-                    show options for rematch and exit
-            continue till one of them wins
-    */
-
     drawGrid();
-    // Replace with a more abstract 'initGameObbject' function that calls this internally
     initPlayers(game.player);
-    //initMap(game.map);
+    drawBoard(&game.board);
 
     int player_turn = 0;
     while(!game.quit) {
 
-        if(quit()) game.quit = true;
-        //TODO: Check if game is quit
+        // if(quit()) game.quit = true;
+        // TODO: Check if game is quit
         // If quit mid declare other player as winner
         // and bring back main menu. 
         // to completely quit they must exit the game.
 
         // quit - exits current game and brings back main menu
         // exit - out of game.
-        drawBoard(&game.board);
+
         getPlayerInput(&game.board, &game.player[player_turn % PLAYER_COUNT]);
+
+        int result = checkGameOutcome(&game.board, game.player);
+        if(result != MO_UNDETERMINED) {
+            if(result == MO_DRAW) {
+                drawBoard(&game.board);
+                printf("\n GAME TIED \n");
+                game.quit = true;
+                //continue;
+            } else {
+                drawBoard(&game.board);
+                printf("\n %s Wins \n", game.player[result].name);
+                game.quit = true;
+                //continue
+            }
+        }
+
+        if(!game.quit) drawBoard(&game.board);
+
+        // int result = isPlayerWinning(&game.board, game.player, game.outcome);
+        // if(result == game.outcome.MP_Outcome.PLAYER1_WIN) {
+
+        // } else if(result == PLAYER2_WIN) {
+
+        // } else if(result == MO_DRAW) {
+
+        // }
 
         // /*  - Save current state
         //     - Clear board
