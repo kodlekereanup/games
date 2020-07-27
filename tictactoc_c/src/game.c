@@ -37,13 +37,14 @@ int main() {
 
     clearBoard(&game.board);
     initBoard(&game.board);
-    drawGrid();
+    //chooseOpponent(game.player);
     initPlayers(game.player);
     drawBoard(&game.board);
 
-    int player_turn = 0;
+    // PLayer with piece X starts the game
+    int player_turn = findPiecePlayer(game.player, X); 
     while(!game.quit) {
-
+        player_turn %= PLAYER_COUNT;
         // if(quit()) game.quit = true;
         // TODO: Check if game is quit
         // If quit mid declare other player as winner
@@ -54,8 +55,8 @@ int main() {
         // exit - out of game.
 
         // TODO: add functionality to quit here 
-
-        getPlayerInput(&game.board, &game.player[player_turn % PLAYER_COUNT]);
+        printf("\n %s's turn: ", game.player[player_turn].name);
+        getPlayerInput(&game.board, &game.player[player_turn]);
 
         int result = checkGameOutcome(&game.board, game.player);
         if(result != MO_UNDETERMINED) {

@@ -50,11 +50,6 @@ typedef struct {
 } Pair;
 
 typedef struct {
-	int key;
-	Pair value;
-} Map;
-
-typedef struct {
 	Player player[PLAYER_COUNT];
 	Board board;
 	// last move
@@ -75,6 +70,13 @@ typedef struct {
 // int find(const int* array, const int free_cell_list_size, const int key);
 // bool legalMove(const int cell, const Board* board);
 // void selectPlayer();
+
+/*
+ *
+ *
+ */
+void chooseOpponent(Player* player);
+
 
 /*
 
@@ -99,12 +101,6 @@ void clearBoard(Board* board);
 
 */
 void getPlayerInput(Board* board, const Player* player); // should take an input -- player id
-
-/*
-
-
-*/
-void drawGrid();
 
 /*
 # Also check for draws
@@ -152,7 +148,7 @@ int findPiecePlayer(const Player* player, PlayerToken piece);
 
 
 */
-Pair translate(const int cell);
+Pair translate(const unsigned int cell);
 
 
 bool left_diag_condition(const int i, const int j);
