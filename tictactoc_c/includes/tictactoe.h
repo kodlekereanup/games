@@ -158,7 +158,7 @@ bool right_diag_condition(const int i, const int j);
 
 bool non_diag_condition(const int i , const int j);
 
-int generic_check(const Board* board, const Player* player,
+int gameStateCheck(const Board* board, const Player* player,
 	      		  bool (*condition)(int, int), const bool columns, const bool diags);
 
 // -------------------------------------- GLOBALS -------------------------------------------------------

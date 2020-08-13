@@ -50,8 +50,8 @@ void chooseOpponent(Player* player) {
 // TODO: Handle a case where both players choose the same piece
 void initPlayers(Player* player) {
 	char piece;
-	bool illegal_piece = true;
-	bool piece_already_chosen;
+	bool illegal_piece;
+	//bool piece_already_chosen;
 
 	for(int i = 0; i < PLAYER_COUNT; i++) {
 		player[i].id = i;
@@ -60,12 +60,12 @@ void initPlayers(Player* player) {
 		printf("\n Enter player %d piece: ", i + 1);
 
 
-    while(illegal_piece) {
+    do {
 			scanf(" %c", &piece);
 			piece = toupper(piece);
 			illegal_piece = !(piece == 'X' || piece == 'O');
 			if(illegal_piece) printf("\n Invalid input. Please choose between X and O: \n");
-		}
+		} while(illegal_piece);
 
 		if(piece == 'X') player[i].piece = X;
 		else player[i].piece = O;
@@ -87,6 +87,7 @@ Pair translate(const unsigned int cell) {
 	// using an array that works like a map
 	// The array is indexed by the cell and the
 	// corresponding board index is retrieved.
+    // TODO: Make map[] global??
 	Pair map[] =
 	{
 		{ 0, 0 }, { 0, 1 }, { 0, 2 },
@@ -108,11 +109,10 @@ void placeOnBoard(Board* board, const Pair board_index, const PlayerToken piece)
 
 void getPlayerInput(Board* board, const Player* player) {
 	Pair board_index;
-	bool illegal_move = true;
+	bool illegal_move;
 	// if translate(cell) is occupied, error and reinput
 
-
-	while(illegal_move) {
+	do {
 		int board_cell = -1; // maybe use your rangedinteger from my library?
 		printf("\n Enter a number between 1 and 9 to make a move: \n");
 		printf("\n Enter 0 for undo last move: \n");
@@ -126,7 +126,7 @@ void getPlayerInput(Board* board, const Player* player) {
 		board_index = translate(board_cell);
 		illegal_move = board->cell_used[board_index.first][board_index.second];
 		if(illegal_move) printf("\n Illegal Move: Try Again!\n");
-	}
+	} while(illegal_move);
 
 	placeOnBoard(board, board_index, player->piece);
 }
@@ -140,7 +140,7 @@ int findPiecePlayer(const Player* player, PlayerToken piece) {
 	for(int i = 0; i < PLAYER_COUNT; ++i) if(player[i].piece == piece) return i;
 }
 
-int generic_check(const Board* board, const Player* player,
+int gameStateCheck(const Board* board, const Player* player,
 	                bool (*condition)(int, int), const bool columns, const bool diags) {
 
   const int X_WIN 		    = 264;
@@ -187,18 +187,18 @@ int checkGameOutcome(const Board* board, const Player* player) {
 
 	bool (*non_diag)(int, int) = non_diag_condition;
 
-	int row_check = generic_check(board, player, non_diag, false, false);
+	int row_check = gameStateCheck(board, player, non_diag, false, false);
 	if(row_check != UNDETERMINED) return row_check;
 
-	int col_check = generic_check(board, player, non_diag, true, false);
+	int col_check = gameStateCheck(board, player, non_diag, true, false);
 	if(col_check != UNDETERMINED) return col_check;
 
 	bool (*left_diag)(const int, const int) = left_diag_condition;
-	int left_diag_check = generic_check(board, player, left_diag, false, true);
+	int left_diag_check = gameStateCheck(board, player, left_diag, false, true);
 	if(left_diag_check != UNDETERMINED) return left_diag_check;
 
 	bool (*right_diag)(const int, const int) = right_diag_condition;
-	int right_diag_check = generic_check(board, player, right_diag, false, true);
+	int right_diag_check = gameStateCheck(board, player, right_diag, false, true);
 	if(right_diag_check != UNDETERMINED) return right_diag_check;
 
 	// The current state of the board does not provide with enough information

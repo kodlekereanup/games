@@ -98,3 +98,7 @@ X : 3 * HORIZONTAL + 3 * VERTICAL + 2 * DIAGONAL = 8
 O : 3 * HORIZONTAL + 3 * VERTICAL + 2 * DIAGONAL = 8
 
 No matter who chooses what at initPlayer(), X always plays first
+
+# BUG
+
+Check makefile, its not written correctly.
